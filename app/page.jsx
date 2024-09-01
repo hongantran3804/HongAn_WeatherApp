@@ -62,7 +62,7 @@ const Home = () => {
           setForecastWeather(() => newDays);
           
         }
-        console.log(res.status);
+       alert(res.status);
       } catch (e) {}
     };
     if (data.lat && data.lon) {

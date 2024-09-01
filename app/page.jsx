@@ -65,7 +65,7 @@ const Home = () => {
         }
        
       } catch (e) {
-        alert(data.lat);
+        alert(e);
       }
     };
     if (data.lat && data.lon) {

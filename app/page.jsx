@@ -33,11 +33,11 @@ const Home = () => {
     getAllCountries();
   }, []);
   useEffect(() => {
-    
     const getForecastWeather = async () => {
       const Weather_API_URL = `http://api.openweathermap.org/data/2.5/forecast?lat=${data.lat}&lon=${data.lon}&units=metric&appid=${process.env.NEXT_PUBLIC_WEATHER_API}`;
       try {
         const res = await fetch(Weather_API_URL);
+        alert(res.status);
         if (res.ok) {
           let checkDays = [];
           const fiveDays = await res.json();
@@ -62,7 +62,7 @@ const Home = () => {
           setForecastWeather(() => newDays);
           
         }
-       alert(res.status);
+       
       } catch (e) {}
     };
     if (data.lat && data.lon) {

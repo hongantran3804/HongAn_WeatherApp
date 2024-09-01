@@ -7,6 +7,7 @@ import humidityIcon from "@public/assets/icons/humidity.png";
 import windIcon from "@public/assets/icons/wind.png";
 import { useState, useEffect, useRef } from "react";
 import { stateList } from "@utils/utils.js";
+import { dayjs } from "@utils/utils.js";
 const Home = () => {
   const city = useRef("Irvine");
   const [data, setData] = useState({});
@@ -15,7 +16,7 @@ const Home = () => {
   const [chosenCountry, setChosenCountry] = useState("United States");
   const [chosenState, setChosenState] = useState("CA");
   const [forecastWeather, setForecastWeather] = useState([]);
-
+  const now = dayjs()
   const getForecastWeather = async () => {
     const Weather_API_URL = `http://api.openweathermap.org/data/2.5/forecast?lat=${data.lat}&lon=${data.lon}&units=metric&appid=${process.env.NEXT_PUBLIC_WEATHER_API}`;
     try {
@@ -25,7 +26,7 @@ const Home = () => {
         const fiveDays = await res.json();
         const newDays = fiveDays.list
           .filter((eachDay) => {
-            if (!checkDays.includes(eachDay.dt_txt.split(" ")[0])) {
+            if (!checkDays.includes(eachDay.dt_txt.split(" ")[0]) && checkDays.length < 5 && eachDay.dt_txt.split(" ")[0] !== now.format("YYYY-MM-DD")) {
               checkDays.push(eachDay.dt_txt.split(" ")[0]);
               return true;
             }
@@ -38,11 +39,9 @@ const Home = () => {
             windSpeed: dayInfo.wind.speed,
             iconCode: dayInfo.weather[0].icon,
           }))
-          .splice(1, 5);
         setForecastWeather(() => newDays);
       }
     } catch (e) {
-      alert(e);
     }
   };
   useEffect(() => {
@@ -223,7 +222,7 @@ const Home = () => {
         </div>
         {forecastWeather.length !== 0 && weatherOk && (
           <div className="h-full flex flex-col items-start w-[40rem]">
-            <h1 className="text-[2rem]">5-Day Forecast</h1>
+            <h1 className="text-[2rem] p-5">5-Day Forecast</h1>
             <ul className="flex-1 p-5 grid grid-cols-3 w-full gap-3">
               {forecastWeather.map((eachDay) => (
                 <li

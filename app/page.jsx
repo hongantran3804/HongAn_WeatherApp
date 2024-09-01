@@ -221,7 +221,7 @@ const Home = () => {
             </div>
           )}
         </div>
-        {forecastWeather.length && weatherOk && (
+        {forecastWeather.length !== 0 && weatherOk && (
           <div className="h-full flex flex-col items-start w-[40rem]">
             <h1 className="text-[2rem]">5-Day Forecast</h1>
             <ul className="flex-1 p-5 grid grid-cols-3 w-full gap-3">

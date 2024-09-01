@@ -33,7 +33,6 @@ const Home = () => {
     getAllCountries();
   }, []);
   useEffect(() => {
-    
     const getForecastWeather = async () => {
       const Weather_API_URL = `http://api.openweathermap.org/data/2.5/forecast?lat=${data.lat}&lon=${data.lon}&units=metric&appid=${process.env.NEXT_PUBLIC_WEATHER_API}`;
       try {
@@ -61,7 +60,9 @@ const Home = () => {
               iconCode: dayInfo.weather[0].icon,
             }));
           setForecastWeather(() => newDays);
+          
         }
+       
       } catch (e) {}
     };
     if (data.lat && data.lon) {

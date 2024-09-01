@@ -35,7 +35,7 @@ const Home = () => {
   }, []);
   useEffect(() => {
     const getForecastWeather = async () => {
-      const Weather_API_URL = `http://api.openweathermap.org/data/2.5/forecast?lat=${data.lat}&lon=${data.lon}&units=metric&appid=${process.env.NEXT_PUBLIC_WEATHER_API}`;
+      const Weather_API_URL = `https://api.openweathermap.org/data/2.5/forecast?lat=${data.lat}&lon=${data.lon}&units=metric&appid=${process.env.NEXT_PUBLIC_WEATHER_API}`;
      
       try {
         const res = await fetch(Weather_API_URL);

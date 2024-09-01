@@ -65,7 +65,7 @@ const Home = () => {
         }
        
       } catch (e) {
-        alert(e);
+        alert(Weather_API_URL);
       }
     };
     if (data.lat && data.lon) {

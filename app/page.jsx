@@ -19,6 +19,7 @@ const Home = () => {
   const now = dayjs()
   const getForecastWeather = async () => {
     const Weather_API_URL = `http://api.openweathermap.org/data/2.5/forecast?lat=${data.lat}&lon=${data.lon}&units=metric&appid=${process.env.NEXT_PUBLIC_WEATHER_API}`;
+    alert(process.env.NEXT_PUBLIC_WEATHER_API);
     try {
       const res = await fetch(Weather_API_URL);
       if (res.ok) {
@@ -71,6 +72,7 @@ const Home = () => {
           process.env.NEXT_PUBLIC_WEATHER_API
         }`
       );
+      
       if (res.ok) {
         const currentData = await res.json();
         setData({

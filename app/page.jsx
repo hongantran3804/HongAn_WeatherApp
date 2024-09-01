@@ -35,6 +35,7 @@ const Home = () => {
   useEffect(() => {
     const getForecastWeather = async () => {
       const Weather_API_URL = `http://api.openweathermap.org/data/2.5/forecast?lat=${data.lat}&lon=${data.lon}&units=metric&appid=${process.env.NEXT_PUBLIC_WEATHER_API}`;
+     
       try {
         const res = await fetch(Weather_API_URL);
         
@@ -64,7 +65,7 @@ const Home = () => {
         }
        
       } catch (e) {
-        alert(e);
+        alert(e, data.lat, data.lon);
       }
     };
     if (data.lat && data.lon) {

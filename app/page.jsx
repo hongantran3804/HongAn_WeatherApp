@@ -60,8 +60,9 @@ const Home = () => {
               iconCode: dayInfo.weather[0].icon,
             }));
           setForecastWeather(() => newDays);
-          console.log(res.status);
+          
         }
+        console.log(res.status);
       } catch (e) {}
     };
     if (data.lat && data.lon) {

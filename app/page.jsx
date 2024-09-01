@@ -9,42 +9,15 @@ import { useState, useEffect, useRef } from "react";
 import { stateList } from "@utils/utils.js";
 import { dayjs } from "@utils/utils.js";
 const Home = () => {
-  const city = useRef("Irvine");
+  const city = useRef();
   const [data, setData] = useState({});
   const [weatherOk, setWeatherOk] = useState(false);
   const [countries, setCountries] = useState([]);
   const [chosenCountry, setChosenCountry] = useState("United States");
   const [chosenState, setChosenState] = useState("CA");
   const [forecastWeather, setForecastWeather] = useState([]);
-  const now = dayjs()
-  const getForecastWeather = async () => {
-    const Weather_API_URL = `http://api.openweathermap.org/data/2.5/forecast?lat=${data.lat}&lon=${data.lon}&units=metric&appid=${process.env.NEXT_PUBLIC_WEATHER_API}`;
-    alert(process.env.NEXT_PUBLIC_WEATHER_API);
-    try {
-      const res = await fetch(Weather_API_URL);
-      if (res.ok) {
-        let checkDays = [];
-        const fiveDays = await res.json();
-        const newDays = fiveDays.list
-          .filter((eachDay) => {
-            if (!checkDays.includes(eachDay.dt_txt.split(" ")[0]) && checkDays.length < 5 && eachDay.dt_txt.split(" ")[0] !== now.format("YYYY-MM-DD")) {
-              checkDays.push(eachDay.dt_txt.split(" ")[0]);
-              return true;
-            }
-            return false;
-          })
-          .map((dayInfo) => ({
-            date: dayInfo.dt_txt.split(" ")[0],
-            temp: Math.floor(dayInfo.main.temp),
-            humidity: dayInfo.main.humidity,
-            windSpeed: dayInfo.wind.speed,
-            iconCode: dayInfo.weather[0].icon,
-          }))
-        setForecastWeather(() => newDays);
-      }
-    } catch (e) {
-    }
-  };
+  const now = dayjs();
+
   useEffect(() => {
     const getAllCountries = async () => {
       try {
@@ -59,47 +32,83 @@ const Home = () => {
     };
     getAllCountries();
   }, []);
+  useEffect(() => {
+    
+    const getForecastWeather = async () => {
+      const Weather_API_URL = `http://api.openweathermap.org/data/2.5/forecast?lat=${data.lat}&lon=${data.lon}&units=metric&appid=${process.env.NEXT_PUBLIC_WEATHER_API}`;
+      try {
+        const res = await fetch(Weather_API_URL);
+        if (res.ok) {
+          let checkDays = [];
+          const fiveDays = await res.json();
+          const newDays = fiveDays.list
+            .filter((eachDay) => {
+              if (
+                !checkDays.includes(eachDay.dt_txt.split(" ")[0]) &&
+                eachDay.dt_txt.split(" ")[0] !== now.format("YYYY-MM-DD")
+              ) {
+                checkDays.push(eachDay.dt_txt.split(" ")[0]);
+                return true;
+              }
+              return false;
+            })
+            .map((dayInfo) => ({
+              date: dayInfo.dt_txt.split(" ")[0],
+              temp: Math.floor(dayInfo.main.temp),
+              humidity: dayInfo.main.humidity,
+              windSpeed: dayInfo.wind.speed,
+              iconCode: dayInfo.weather[0].icon,
+            }));
+          setForecastWeather(() => newDays);
+        }
+      } catch (e) {}
+    };
+    if (data.lat && data.lon) {
+      getForecastWeather();
+    }
+    
+  }, [data]);
   const getWeatherData = async (city) => {
     if (city === "") {
       alert("Enter City Name");
       return;
     }
-    try {
-      const res = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=${city}${
-          chosenCountry === "United States" ? `,${chosenState}` : ""
-        },${chosenCountry}&units=metric&appid=${
-          process.env.NEXT_PUBLIC_WEATHER_API
-        }`
-      );
-      
-      if (res.ok) {
-        const currentData = await res.json();
-        setData({
-          temp: Math.floor(currentData.main.temp),
-          humidity: currentData.main.humidity,
-          windSpeed: currentData.wind.speed,
-          location: currentData.name,
-          iconCode: currentData.weather[0].icon,
-          desc: currentData.weather[0].description,
-          maxTemp: Math.floor(currentData.main.temp_max),
-          minTemp: Math.floor(currentData.main.temp_min),
-          lat: currentData.coord.lat,
-          lon: currentData.coord.lon,
-        });
-        setWeatherOk(true);
-      } else {
-        setWeatherOk(false);
+    if (city !== "") {
+      try {
+        const res = await fetch(
+          `https://api.openweathermap.org/data/2.5/weather?q=${city}${
+            chosenCountry === "United States" ? `,${chosenState}` : ""
+          },${chosenCountry}&units=metric&appid=${
+            process.env.NEXT_PUBLIC_WEATHER_API
+          }`
+        );
+
+        if (res.ok) {
+          const currentData = await res.json();
+          setData({
+            temp: Math.floor(currentData.main.temp),
+            humidity: currentData.main.humidity,
+            windSpeed: currentData.wind.speed,
+            location: currentData.name,
+            iconCode: currentData.weather[0].icon,
+            desc: currentData.weather[0].description,
+            maxTemp: Math.floor(currentData.main.temp_max),
+            minTemp: Math.floor(currentData.main.temp_min),
+            lat: currentData.coord.lat,
+            lon: currentData.coord.lon,
+          });
+          setWeatherOk(true);
+        } else {
+          setWeatherOk(false);
+        }
+      } catch (e) {
+        alert("Something went wrong");
       }
-    } catch (e) {
-      alert("Something went wrong");
-    }
+    
+    } 
   };
-  useEffect(() => {
-    getWeatherData();
-  }, []);
   return (
-    <section className="flex flex-col items-center justify-center w-full h-full ">
+    <section className="flex flex-col items-center justify-center w-full h-full overflow-hidden">
       <div className="flex flex-row items-center gap-2">
         <div
           className="w-fit p-10 bg-gradient-to-b from-indigo-500 
@@ -115,8 +124,6 @@ const Home = () => {
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   getWeatherData(city.current.value);
-                    getForecastWeather();
-                  
                 }
               }}
             />
@@ -159,8 +166,6 @@ const Home = () => {
               className="bg-white p-3 rounded-full flex items-center justify-center cursor-pointer"
               onClick={(e) => {
                 getWeatherData(city.current.value);
-                  getForecastWeather();
-                
               }}
             >
               <Image src={searchIcon} className="w-[0.9rem]" />
